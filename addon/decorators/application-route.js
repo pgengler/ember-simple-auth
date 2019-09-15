@@ -6,7 +6,7 @@ import Configuration from './../configuration';
 import isFastBoot from 'ember-simple-auth/utils/is-fastboot';
 
 export const applicationRoute = () => target => {
-  const newClass = class extends target {
+  const NewClass = class extends target.prototype {
     @service session;
 
     _isFastBoot = isFastBoot();
@@ -26,9 +26,7 @@ export const applicationRoute = () => target => {
         this.session.on(event, (...args) => this[method](...args));
       });
     }
-  };
 
-  if (!target.prototype.sessionAuthenticated) {
     /**
       This method handles the session's
       {{#crossLink "SessionService/authenticationSucceeded:event"}}{{/crossLink}}
@@ -43,7 +41,7 @@ export const applicationRoute = () => target => {
       @method sessionAuthenticated
       @public
     */
-    newClass.prototype.sessionAuthenticated = function sessionAuthenticated() {
+    sessionAuthenticated = function sessionAuthenticated() {
       const attemptedTransition = this.session.attemptedTransition;
       const cookies = getOwner(this).lookup('service:cookies');
       const redirectTarget = cookies.read('ember_simple_auth-redirectTarget');
@@ -57,10 +55,8 @@ export const applicationRoute = () => target => {
       } else {
         this.transitionTo(this.routeAfterAuthentication);
       }
-    };
-  }
+    }
 
-  if (!target.prototype.sessionInvalidated) {
     /**
       This method handles the session's
       {{#crossLink "SessionService/invalidationSucceeded:event"}}{{/crossLink}}
@@ -76,7 +72,7 @@ export const applicationRoute = () => target => {
       @method sessionInvalidated
       @public
     */
-    newClass.prototype.sessionInvalidated = function sessionInvalidated() {
+    sessionInvalidated = function sessionInvalidated() {
       if (!Ember.testing) {
         if (this._isFastBoot) {
           this.transitionTo(Configuration.rootURL);
@@ -84,8 +80,8 @@ export const applicationRoute = () => target => {
           window.location.replace(Configuration.rootURL);
         }
       }
-    };
-  }
+    }
+  };
 
-  return newClass;
+  return Object.setPrototypeOf(target, NewClass.prototype);
 };
