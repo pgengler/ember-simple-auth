@@ -4,6 +4,7 @@ module.exports = {
     'simplabs',
     'simplabs/plugins/ember',
   ],
+  parser: 'babel-eslint',
   parserOptions: {
     ecmaVersion: 2017,
     sourceType: 'module'
