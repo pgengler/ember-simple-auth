@@ -52,7 +52,7 @@ function runIfUnauthenticated(owner, transition, callback) {
   @public
 */
 export const authenticateRoute = () => target => {
-  const newClass = class extends target.prototype {
+  const NewClass = class extends target.prototype {
     /**
       The session service.
 
@@ -133,5 +133,5 @@ export const authenticateRoute = () => target => {
     }
   };
 
-  return Object.setPrototypeOf(target, newClass.prototype);
+  return Object.setPrototypeOf(target, NewClass.prototype);
 };
